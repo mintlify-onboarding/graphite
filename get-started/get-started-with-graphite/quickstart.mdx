@@ -1,0 +1,44 @@
+---
+title: "Quick start"
+description: "In this quick start, you will clone a new repository, use the Graphite CLI to create and manage PRs, and visualize and review changes in the Graphite web app."
+---
+
+## Prerequisites
+- Basic understanding of GitHub and `git`.
+- The Graphite CLI is installed and authenticated.
+
+## Clone a repository
+
+After you've successfully installed and authenticated the Graphite CLI, you can use gt commands to install and manipulate repositories and their data.
+
+1. Create a new repository on GitHub with a README so you can create, merge, and visualize new PRs. For this tutorial, we'll use a sample repository called `gt-quick-start`:
+
+```perl
+$ gt clone https://github.com/<your-repo-name>
+Passing command through to git...
+Running: "git clone https://github.com/<your-repo-name>"
+
+Cloning into 'gt-quick-start'...
+remote: Enumerating objects: 3, done.
+remote: Counting objects: 100% (3/3), done.
+remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
+Receiving objects: 100% (3/3), done.
+```
+
+Note that the output includes the statement _"passing command through to git..."_
+
+`gt` passes unrecognizable commands through to git so you can run commands like `gt clone`, `gt add`, and `gt status` even though they aren't native commands in Graphite.
+
+2. Enter the newly cloned repository.
+
+```perl
+$ cd gt-quick-start
+$ gt log
+Graphite has not been initialized, attempting to setup now...
+
+Welcome to Graphite!
+
+? Select a trunk branch, which you open pull requests against - inferred trunk main (autocomplete or arrow keys) ›
+❯   main
+```
+

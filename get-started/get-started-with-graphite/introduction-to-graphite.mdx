@@ -1,0 +1,202 @@
+---
+title: "Introduction to Graphite"
+description: "Graphite is a simple code review platform designed for engineers to write and review smaller pull requests, stay unblocked, and ship faster. Graphite was inspired by code review tools like Phabricator at Facebook and Critique at Google."
+---
+
+![](/images/1.webp)
+
+The Graphite workflow follows three main principles to enhance your normal `gitworkflow`:
+
+1. Keep your pull requests small
+2. Sync your trunk branch with remote, and restack (rebase) your working branches frequently
+3. Use one commit per branch
+
+<Note>
+    Ready to start building? Check out the [quick start](/get-started/get-started-with-graphite/quickstart), which walks you through initializing Graphite in a GitHub repo, all the way to merging a stack in the app.
+</Note>
+
+### Designed for simplicity
+
+Many developers already follow a core piece of the stacking methodology by breaking up large changes into sequences of commits. Graphite takes this a step further by breaking up large changes into sequences of **pull requests**. Making the unit of change a PR instead of a commit makes testing, reviewing, landing, and reverting changes much easier.
+
+<Tip>
+A simple way to familiarize yourself with stacking PRs is to create one commit per PR.
+</Tip>
+
+For developers who are wary of rebasing, Graphite aims to handle all of the complexity. The CLI abstracts otherwise complex git patterns into single commands, and the Graphite workflow calls for small PRs, which tend to have more self-contained changes and spend less time in review. This combination leads to fewer merge conflicts, keeping you unblocked.
+
+While Graphite is a tool that is meant to make development much simpler, it's still designed to work with your favorite workflows—you can still use your terminal and you can still use `git` commands.
+
+## Keep PRs small
+Graphite promotes a trunk-based development workflow, where developers break their changes into small PRs. In this workflow, you frequently rebase your changes onto your `trunk` branch (this is also known as main or the branch that has the most activity in your repository), and each of your changes is usually dependent on the last.
+
+### 
+
+Stacks vs. feature branches
+Let's say you're an engineer at a big tech company called Flipstagram. You’re tasked with creating Flipstagram's Stories feature, which requires API, server, and frontend changes.
+
+Flipstagram has thousands of engineers, all working in the same codebase with updates to Flipstagram's `trunk` branch every few seconds.
+
+To build Stories, you may think to create a feature branch—but these often go stale and lead to messy merge conflicts and extremely long review cycles. You typically have to send a monster PR to multiple reviewers, or ask one person without all of the necessary knowledge and context to review all your changes.
+
+But with stacking and trunk-based development, you can send modular PRs to relevant reviewers, leading to faster review times. Graphite offers first-class support for stacking with a CLI and web app that’s fully interoperable with GitHub. In order to start stacking, you're encouraged to follow a trunk-based workflow, rather than a long-lived feature branch workflow.
+
+<Note>
+    We explicitly designed Graphite so you can use our CLI and web app without the rest of your team having to change their tools or workflows—we'll seamlessly sync your code changes and reviews back to GitHub.
+</Note>
+
+### Sync with remote and restack frequently
+
+Following a trunk-based style means you frequently rebase your changes onto your trunk branch, and each of your changes is usually dependent on the last.
+
+In the case of Flipstagram, you would:
+
+- Branch off of `main` and create a branch with your API changes
+- Then branch off of the API changes and create your server additions
+- Create a branch based off of the server changes with all of your frontend work
+
+This flow makes your PRs small and self-contained, producing a stack with three independent changes. By frequently rebasing onto main, you can more easily manage (and avoid) merge conflicts.
+
+Since your changes across all three surfaces are separate PRs, you can request separate, more suitable reviewers for each. And while awaiting feedback, you can continue to stack changes and submit them for review. You're no longer blocked on merging all of your changes into main before iterating on the feature.
+
+### Use one commit per branch
+
+The Graphite CLI use branches instead of commits to represent atomic changes in a stack. And your standard `git` workflow still works with Graphite. Fundamentally, each gt (Graphite’s CLI) command is executing a series of `git` commands under the hood. We've created a series of command combinations and flags that allow you to accomplish 3–4 `git` commands with just one `gt` command—which is why we strongly recommend that you follow this flow when creating a new branch in gt (which diverges from the GitHub mental model):
+
+<Steps>
+  <Step title="First Step">
+    Start by building your feature on an existing branch: do NOT create a new branch before working on your feature as you would in GitHub.
+  </Step>
+  <Step title="Second Step">
+    Add your unstaged changes with `gt add`.
+  </Step>
+  <Step title="Third Step">
+    Create a new branch and commit your changes simultaneously with `gt branch create -m <COMMIT-MESSAGE>`.
+  </Step>
+</Steps>
+
+### Managing a stack of changes
+
+A stack is essentially a DAG, and you can see this by running any of the gt log commands. With Graphite, you'll frequently jump between branches in your stack as you make updates. You may also decide to do things like split your branch into multiple smaller branches, `fold` two or more branches into one, or shuffle the order of the branches in your stack entirely.
+
+<Note>
+    Read more about creating and submitting pull requests, updating mid-stack branches, and squashing/folding/splitting branches in our CLI documentation.
+</Note>
+
+Let's take a look at what the Flipstagram Stories stack looks like right now:
+
+```perl
+# view your current stacks as tracked by Graphite
+> gt log
+
+# output
+◉ feat-stories-frontend (current)
+│ 8 seconds ago
+│
+│ 95338df - Stories - front end [3/3]
+│
+◯ feat-stories-server
+│ 8 seconds ago
+│
+│ 95610c6 - Stories - server [2/3]
+│
+◯ feat-stories-api
+│ 10 minutes ago
+│
+│ 48cd85e - Stories - API [1/3]
+│
+◯ main 
+│ 11 minutes ago
+│
+```
+
+From here, you can see what your current position is in the stack (indicated by the (`current`) flag near the branch name, as well as the filled-in node).
+
+### Automatically rebase branches after changes
+
+Many `gt` commands take the pain out of rebasing, which we refer to as restacking, since we’re “restacking” each of our branches on top of each other and resolving merge conflicts as we go.
+
+Going back to Flipstagram, let's say a teammate pushed some new icons to `main` that you want access to when editing the frontend of your app:
+
+```perl
+# syncing changes from main
+> gt sync
+
+# output
+🌲 Pulling main from remote...
+main fast-forwarded to 818b7181eca9bb31f1578e22c5d4522ebe480c91.
+
+# checking the state of our stack again
+> gt log
+
+◉ feat-stories-frontend (needs restack)
+│ 8 seconds ago
+│
+│ 95338df - Stories - front end [3/3]
+│
+◯ feat-stories-server (needs restack)
+│ 8 seconds ago
+│
+│ 95610c6 - Stories - server [2/3]
+│
+◯ feat-stories-api (needs restack)
+│ 10 minutes ago
+│
+│ 48cd85e - Stories - API [1/3]
+│
+◯ main 
+│ just now
+|
+│ 818b718 - adding support for new stories icons
+|
+```
+
+Notice that each of the branches in this stack now says (`needs restack`), since gt has detected that the parent branch has updates that aren't yet reflected. We can fix this by doing the following:
+
+
+```perl
+# restacking changes on main
+> gt restack
+
+# output
+Restacked feat-stories-api on main.
+Restacked feat-stories-server on feat-stories-api.
+Restacked feat-stories-fronted on feat-stories-server.
+
+# checking the state of our stack one more time
+> gt log
+
+◉ feat-stories-frontend (current)
+│ just now
+│
+│ 95338df - Stories - front end [3/3]
+│
+◯ feat-stories-server
+│ just now
+│
+│ 95610c6 - Stories - server [2/3]
+│
+◯ feat-stories-api
+│ just now
+│
+│ 48cd85e - Stories - API [1/3]
+│
+◯ main 
+│ 1 minute ago
+|
+│ 818b718 - adding support for new stories icons
+|
+```
+
+If needed, `gt` will prompt you to resolve merge conflicts with any of these branches and the new additions to `main`. Otherwise, the branches have successfully been restacked and you're ready to implement the new icons in your frontend.
+
+
+### Submit and merge stacks
+
+Using `gt` means you can push all of these changes to GitHub at once.
+
+You can also review and merge PRs directly from the Graphite app. Unlike GitHub, Graphite's review interface is stack-friendly, and makes reviewing and submitting stacks extremely easy. When viewing the top-most PR in a stack, you'll see a button that prompts you to `Merge 3 PRs`—and Graphite will take care of the rebasing portion of the merge for you.
+
+Each PR in Graphite has an equivalent page in GitHub, so regardless of which platform your reviewers are on, they can still see all of your changes. To give GitHub reviewers more context, whenever you push a stack of PRs to GitHub, Graphite automatically adds a comment to every PR in the stack to help your reviewers navigate between them as you would in the Graphite app:
+
+![](/images/2.webp)

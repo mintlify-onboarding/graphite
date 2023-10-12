@@ -1,0 +1,61 @@
+{
+    "name": "Graphite",
+    "logo": {
+      "light": "/logo/light.png",
+      "dark": "/logo/dark.png"
+    },
+    "favicon": "/favicon.png",
+    "colors": {
+      "primary": "#111827",
+      "light": "#FAFAFA",
+      "dark": "#111827"
+    },
+    "topbarCtaButton": {
+      "name": "Sign Up",
+      "url": "https://app.graphite.dev/signup"
+    },
+    "topbarLinks": [
+      {
+        "name": "Log In",
+        "url": "https://app.graphite.dev/"
+      }
+    ],
+    "anchors": [
+        {
+            "name": "Site Status",
+            "icon": "signal-bars",
+            "url": "https://status.graphite.dev/"
+          },
+        {
+        "name": "Blog",
+        "icon": "newspaper",
+        "url": "https://graphite.dev/blog"
+      },
+      {
+        "name": "Privacy",
+        "icon": "lock",
+        "url": "https://graphite.dev/privacy"
+      }
+    ],
+    "navigation": [
+      {
+        "group": "Get Started",
+        "pages": [
+            {
+                "group": "Get started with Graphite",
+                "pages": [
+                    "get-started/get-started-with-graphite/introduction",
+                    "get-started/get-started-with-graphite/introduction-to-graphite",
+                    "get-started/get-started-with-graphite/key-features",
+                    "get-started/get-started-with-graphite/quickstart"
+                ]
+            }
+        ]
+      }
+    ],
+    "footerSocials":
+      {
+          "twitter": "https://twitter.com/withgraphite?lang=en",
+          "linkedin": "https://www.linkedin.com/company/withgraphite/"
+      }
+  }
